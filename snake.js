@@ -1,15 +1,15 @@
 function init()
 {
     canvas = document.getElementById('mycanvas');
-     H = canvas.height = 690;
-     W= canvas.width = 1480;
+    H = canvas.height = 690; //frame height
+    W= canvas.width = 1480;  // frame width
     pen = canvas.getContext('2d');
 
     cs =40; // cell size
 
-    score =100;
+    score =100;   // initial score
 
-    food = getRandomFood();
+    food = getRandomFood();   // get food
     
     game_over=false;
 
@@ -18,13 +18,14 @@ function init()
 
     trophy = new Image();
     trophy.src = "./img/trophy.png"
+    
     snake={
 
         init_len:5,
         color:"blue",
         cells:[],
         direction:"right",
-        createSnake:function()
+        createSnake:function()  // will init the cells
         {
             for(var i=this.init_len;i>0;i--)
             {
@@ -32,10 +33,8 @@ function init()
             }
 
         },
-        drawSnake:function()
-        {
-            
-            
+        drawSnake:function()  // will draw the boxes on the frame 
+        {   
             for(var i=0;i<this.cells.length;i++)
             {
                 pen.fillStyle=this.color;
@@ -47,16 +46,17 @@ function init()
             var headX = this.cells[0].x;
             var headY = this.cells[0].y;
            
-            if(headX==food.x && headY== food.y)
+            //when head of the snake collides with the food coordinates
+            if(headX==food.x && headY== food.y) 
             {
                 food = getRandomFood();
                 score+=1;
             }
-            else{
+            else{    // else pop the tail/last block and place it to the front
             this.cells.pop();
             }
             var nextX,nextY;
-            if(this.direction=="right")
+            if(this.direction=="right")    // for keyboard 
             {
                 nextX = headX+1;
                 nextY = headY;
@@ -80,8 +80,10 @@ function init()
                 nextY = headY+1;
                
             } 
-            this.cells.unshift({x:nextX,y:nextY});
+            this.cells.unshift({x:nextX,y:nextY}); 
 
+
+            /* prevents snake from going out*/
             var last_x= Math.round(W/cs);
             var last_y =Math.round(H/cs);
             if(this.cells[0].y < 0 || this.cells[0].x < 0 || this.cells[0].x > last_x || this.cells[0].y > last_y)
@@ -92,6 +94,8 @@ function init()
         }
     };
     snake.createSnake();
+    
+	//Add a Event Listener on the Document Object
     function keyPressed(e)
     {
         if(e.key=="ArrowRight" ){
@@ -112,19 +116,22 @@ function init()
         console.log(snake.direction);
 
     }
-
-
     document.addEventListener("keydown",keyPressed);
     
 }
 
 function draw()
 {
+    // erase the old frame and draw new snake
    pen.clearRect(0,0,W,H) 
    snake.drawSnake();
+
+   // draw the food 
    pen.fillStyle="red";
    pen.drawImage(food_img,food.x*cs,food.y*cs,cs,cs);
 
+
+   // trophy and score
    pen.drawImage(trophy,18,20,cs+20,cs+20);
    pen.fillStyle = "blue";
    pen.font = "20px Roboto"
@@ -138,6 +145,7 @@ function update()
 
 function getRandomFood()
 {
+    // generate random coordinates for food
     var FoodX= Math.round(Math.random()*(W-cs)/cs);
     var FoodY= Math.round(Math.random()*(H-cs)/cs);
 
